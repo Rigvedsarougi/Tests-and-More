@@ -8,7 +8,7 @@ import os
 DEFAULT_LETTERHEAD_PATH = "letter head2.pdf"
 
 # Streamlit application
-st.title("PDF Overlay Application")
+st.title("Receipt Generator - TM")
 
 # File upload for the receipt and letterhead
 receipt_file = st.file_uploader("Upload Receipt PDF", type="pdf")
