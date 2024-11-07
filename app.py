@@ -12,7 +12,6 @@ st.title("PDF Overlay Application")
 
 # File upload for the receipt and letterhead
 receipt_file = st.file_uploader("Upload Receipt PDF", type="pdf")
-letterhead_file = st.file_uploader("Upload Letterhead PDF (optional)", type="pdf")
 
 # Display default transformation values and allow user customization
 up_movement = st.number_input("Up Movement", value=0)
