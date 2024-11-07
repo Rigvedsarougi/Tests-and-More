@@ -32,11 +32,6 @@ if st.button("Generate PDF") and receipt_file:
 
         # Check if a custom letterhead was uploaded; otherwise, use the default letterhead
         letterhead_path = DEFAULT_LETTERHEAD_PATH
-        if letterhead_file:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as letterhead_temp:
-                letterhead_temp.write(letterhead_file.read())
-                letterhead_temp.close()
-                letterhead_path = letterhead_temp.name
 
         # Perform overlay operation
         overlay_receipt_on_letterhead(
@@ -57,6 +52,3 @@ if st.button("Generate PDF") and receipt_file:
 
     # Clean up temporary files
     os.remove(receipt_temp.name)
-    if letterhead_file:
-        os.remove(letterhead_temp.name)
-    os.remove(output_temp.name)
