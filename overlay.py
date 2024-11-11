@@ -1,11 +1,11 @@
-# overlay.py
 from PyPDF2 import PdfReader, PdfWriter, Transformation
 
 def overlay_receipt_on_letterhead(receipt_path, letterhead_path, output_path, 
                                   up=0, down=0, left=0, right=0, 
                                   scale_increase=0.0, scale_decrease=0.0):
     """
-    Overlays a receipt PDF onto a letterhead PDF with custom positioning and size adjustments.
+    Overlays each page of a multi-page receipt PDF onto corresponding pages of a letterhead PDF 
+    with custom positioning and size adjustments.
 
     Parameters:
         receipt_path (str): Path to the receipt PDF.
@@ -22,19 +22,38 @@ def overlay_receipt_on_letterhead(receipt_path, letterhead_path, output_path,
     letterhead_pdf = PdfReader(letterhead_path)
     writer = PdfWriter()
 
+    # Calculate transformations
     x_position = right - left
     y_position = up - down
     scale = 1.0 + scale_increase - scale_decrease
 
-    if len(receipt_pdf.pages) > 0 and len(letterhead_pdf.pages) > 0:
-        letterhead_page = letterhead_pdf.pages[0]
-        receipt_page = receipt_pdf.pages[0]
+    # Determine the number of pages to process
+    max_pages = max(len(receipt_pdf.pages), len(letterhead_pdf.pages))
 
+    for i in range(max_pages):
+        # Use a blank page if one PDF is shorter than the other
+        if i < len(receipt_pdf.pages):
+            receipt_page = receipt_pdf.pages[i]
+        else:
+            receipt_page = PdfWriter().add_blank_page(width=letterhead_pdf.pages[0].mediabox.width,
+                                                      height=letterhead_pdf.pages[0].mediabox.height)
+
+        if i < len(letterhead_pdf.pages):
+            letterhead_page = letterhead_pdf.pages[i]
+        else:
+            letterhead_page = PdfWriter().add_blank_page(width=receipt_page.mediabox.width,
+                                                         height=receipt_page.mediabox.height)
+
+        # Apply transformations to the receipt page
         transformation = Transformation().scale(scale).translate(x_position, y_position)
         receipt_page.add_transformation(transformation)
 
+        # Merge the transformed receipt onto the letterhead page
         letterhead_page.merge_page(receipt_page)
+
+        # Add the merged page to the writer
         writer.add_page(letterhead_page)
 
+    # Save the resulting combined PDF
     with open(output_path, "wb") as output_file:
         writer.write(output_file)
