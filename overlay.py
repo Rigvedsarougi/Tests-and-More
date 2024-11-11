@@ -18,6 +18,7 @@ def overlay_receipt_on_letterhead(receipt_path, letterhead_path, output_path,
         scale_increase (float): Factor to increase the scale (e.g., 0.1 for 10%).
         scale_decrease (float): Factor to decrease the scale (e.g., 0.1 for 10%).
     """
+    # Load PDFs
     receipt_pdf = PdfReader(receipt_path)
     letterhead_pdf = PdfReader(letterhead_path)
     writer = PdfWriter()
@@ -27,22 +28,28 @@ def overlay_receipt_on_letterhead(receipt_path, letterhead_path, output_path,
     y_position = up - down
     scale = 1.0 + scale_increase - scale_decrease
 
-    # Determine the number of pages to process
+    # Determine the maximum number of pages to overlay
     max_pages = max(len(receipt_pdf.pages), len(letterhead_pdf.pages))
 
     for i in range(max_pages):
-        # Use a blank page if one PDF is shorter than the other
+        # Use a blank page if a PDF has fewer pages than max_pages
         if i < len(receipt_pdf.pages):
             receipt_page = receipt_pdf.pages[i]
         else:
-            receipt_page = PdfWriter().add_blank_page(width=letterhead_pdf.pages[0].mediabox.width,
-                                                      height=letterhead_pdf.pages[0].mediabox.height)
+            # Create a blank page with the same size as the first letterhead page
+            receipt_page = PdfWriter().add_blank_page(
+                width=letterhead_pdf.pages[0].mediabox.width,
+                height=letterhead_pdf.pages[0].mediabox.height
+            )
 
         if i < len(letterhead_pdf.pages):
             letterhead_page = letterhead_pdf.pages[i]
         else:
-            letterhead_page = PdfWriter().add_blank_page(width=receipt_page.mediabox.width,
-                                                         height=receipt_page.mediabox.height)
+            # Create a blank page with the same size as the first receipt page
+            letterhead_page = PdfWriter().add_blank_page(
+                width=receipt_page.mediabox.width,
+                height=receipt_page.mediabox.height
+            )
 
         # Apply transformations to the receipt page
         transformation = Transformation().scale(scale).translate(x_position, y_position)
