@@ -1,5 +1,5 @@
 # overlay.py
-from PyPDF2 import PdfReader, PdfWriter, Transformation
+from PyPDF2 import PdfReader, PdfWriter, PageObject, Transformation
 
 def overlay_receipt_on_letterhead(receipt_path, letterhead_path, output_path, 
                                   up=0, down=0, left=0, right=0, 
@@ -30,22 +30,26 @@ def overlay_receipt_on_letterhead(receipt_path, letterhead_path, output_path,
     max_pages = max(len(receipt_pdf.pages), len(letterhead_pdf.pages))
 
     for i in range(max_pages):
-        # Get the current receipt and letterhead pages (or last page if out of range)
+        # Get the current pages or reuse the last page if out of range
         receipt_page = receipt_pdf.pages[i] if i < len(receipt_pdf.pages) else receipt_pdf.pages[-1]
         letterhead_page = letterhead_pdf.pages[i] if i < len(letterhead_pdf.pages) else letterhead_pdf.pages[-1]
 
-        # Create a copy of the letterhead page for overlay
-        letterhead_page_copy = letterhead_page.clone()
+        # Create a new page based on the letterhead page
+        new_page = PageObject.create_blank_page(
+            width=letterhead_page.mediabox.width,
+            height=letterhead_page.mediabox.height
+        )
+        new_page.merge_page(letterhead_page)  # Merge the letterhead page first
 
-        # Apply transformation to the receipt page
+        # Apply transformations to the receipt page
         transformation = Transformation().scale(scale).translate(x_position, y_position)
         receipt_page.add_transformation(transformation)
 
-        # Merge the transformed receipt onto the letterhead page
-        letterhead_page_copy.merge_page(receipt_page)
+        # Merge the transformed receipt onto the new page with the letterhead
+        new_page.merge_page(receipt_page)
 
         # Add the merged page to the writer
-        writer.add_page(letterhead_page_copy)
+        writer.add_page(new_page)
 
     # Save the resulting combined PDF
     with open(output_path, "wb") as output_file:
