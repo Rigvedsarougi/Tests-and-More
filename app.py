@@ -14,12 +14,12 @@ st.title("Receipt Generator - TM")
 receipt_file = st.file_uploader("Upload Receipt PDF", type="pdf")
 
 # Display default transformation values and allow user customization
-up_movement = st.number_input("Up Movement", value=0)
-down_movement = st.number_input("Down Movement", value=170)
+up_movement = st.number_input("Up Movement", value=25)
+down_movement = st.number_input("Down Movement", value=0)
 left_movement = st.number_input("Left Movement", value=0)
-right_movement = st.number_input("Right Movement", value=0)
-scale_increase = st.number_input("Scale Increase", value=0.05)
-scale_decrease = st.number_input("Scale Decrease", value=0.0)
+right_movement = st.number_input("Right Movement", value=15)
+scale_increase = st.number_input("Scale Increase", value=0.0)
+scale_decrease = st.number_input("Scale Decrease", value=0.30)
 
 # Button to generate the overlay
 if st.button("Generate PDF") and receipt_file:
