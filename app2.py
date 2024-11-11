@@ -1,10 +1,8 @@
-# app.py (modifications for target page input)
 import streamlit as st
 from overlay1 import overlay_receipt_on_letterhead
 import tempfile
 import os
 
-# Streamlit application
 st.title("PDF Overlay Application")
 
 receipt_file = st.file_uploader("Upload Receipt PDF", type="pdf")
