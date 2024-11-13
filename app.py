@@ -5,7 +5,7 @@ import tempfile
 import os
 
 # Path to the default letterhead in the repository
-DEFAULT_LETTERHEAD_PATH = "letterhead.pdf"
+DEFAULT_LETTERHEAD_PATH = "letter.pdf"
 
 # Streamlit application
 st.title("Receipt Generator - TM")
